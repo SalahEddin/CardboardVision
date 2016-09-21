@@ -1,0 +1,29 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.syriancarrot.hellovr">
+
+    <!-- These permissions are used by Google VR SDK to get the best Google VR headset profiles. !-->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:largeHeap="true"
+        android:theme="@android:style/Theme.Holo.Light">
+        <!-- This demo is singleTask since it makes launching via custom adb intents easier. -->
+        <activity android:name=".SimpleVrPanoramaActivity"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <!-- Primary intent when launching from the home screen -->
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="com.google.intent.category.CARDBOARD" />
+            </intent-filter>
+        </activity>
+    </application>
+
+
+
+</manifest>
