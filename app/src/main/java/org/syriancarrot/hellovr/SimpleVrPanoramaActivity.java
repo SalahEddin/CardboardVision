@@ -18,6 +18,7 @@ package org.syriancarrot.hellovr;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.AssetManager;
 import android.graphics.BitmapFactory;
 import android.graphics.SurfaceTexture;
@@ -136,6 +137,10 @@ public class SimpleVrPanoramaActivity extends GvrActivity implements GvrView.Ste
     surface = new SurfaceTexture(texture);
     surface.setOnFrameAvailableListener(this);
 
+      //CALL FROM YOUR ACTIVITY**
+      MyPermissions requestUserPermission = new MyPermissions(this);
+      requestUserPermission.verifyStoragePermissions();
+
     camera = Camera.open();
     Camera.Parameters params = camera.getParameters();
     params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
@@ -226,11 +231,11 @@ public class SimpleVrPanoramaActivity extends GvrActivity implements GvrView.Ste
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
-    setContentView(R.layout.main_layout);
-    cardboardView = (GvrView) findViewById(R.id.cardboard_view);
-    cardboardView.setRenderer(this);
-    setGvrView(cardboardView);
+      setContentView(R.layout.main_layout);
+      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+      cardboardView = (GvrView) findViewById(R.id.cardboard_view);
+      cardboardView.setRenderer(this);
+      setGvrView(cardboardView);
 
     mCamera = new float[16];
     mView = new float[16];
