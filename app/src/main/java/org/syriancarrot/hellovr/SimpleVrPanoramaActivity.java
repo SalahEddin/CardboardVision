@@ -16,38 +16,21 @@
 
 package org.syriancarrot.hellovr;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.res.AssetManager;
-import android.graphics.BitmapFactory;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
-import android.net.Uri;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
-import android.util.Pair;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.vr.sdk.base.Eye;
 import com.google.vr.sdk.base.GvrActivity;
 import com.google.vr.sdk.base.GvrView;
 import com.google.vr.sdk.base.HeadTransform;
 import com.google.vr.sdk.base.Viewport;
-import com.google.vr.sdk.widgets.pano.VrPanoramaEventListener;
-import com.google.vr.sdk.widgets.pano.VrPanoramaView;
-import com.google.vr.sdk.widgets.pano.VrPanoramaView.Options;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -55,7 +38,6 @@ import java.nio.ShortBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-import org.syriancarrot.hellovr.CardboardOverlayView;
 
 /**
  * A basic PanoWidget Activity to load panorama images from disk. It will load a test image by
@@ -73,25 +55,6 @@ public class SimpleVrPanoramaActivity extends GvrActivity implements GvrView.Ste
   private static final int GL_TEXTURE_EXTERNAL_OES = 0x8D65;
   private static Camera camera = null;
 
-  private final String vertexShaderCode =
-          "attribute vec4 position;" +
-                  "attribute vec2 inputTextureCoordinate;" +
-                  "varying vec2 textureCoordinate;" +
-                  "void main()" +
-                  "{" +
-                  "gl_Position = position;" +
-                  "textureCoordinate = inputTextureCoordinate;" +
-                  "}";
-
-  private final String fragmentShaderCode =
-          "#extension GL_OES_EGL_image_external : require\n" +
-                  "precision mediump float;" +
-                  "varying vec2 textureCoordinate;                            \n" +
-                  "uniform samplerExternalOES s_texture;               \n" +
-                  "void main(void) {" +
-                  "  gl_FragColor = texture2D( s_texture, textureCoordinate );\n" +
-                  //"  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n" +
-                  "}";
 
   private FloatBuffer vertexBuffer, textureVerticesBuffer, vertexBuffer2;
   private ShortBuffer drawListBuffer, buf2;
@@ -145,18 +108,7 @@ public class SimpleVrPanoramaActivity extends GvrActivity implements GvrView.Ste
     Camera.Parameters params = camera.getParameters();
     params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
 
-    // Check what resolutions are supported by your camera
-    /*List<Camera.Size> sizes = params.getSupportedPictureSizes();
-
-    // Iterate through all available resolutions and choose one.
-    // The chosen resolution will be stored in mSize.
-    Camera.Size mSize = null;
-    for (Camera.Size size : sizes) {
-        Log.i(TAG, "Available resolution: " + size.width + "x" + size.height);
-        mSize = size;
-    }
-    params.setPictureSize(5312,2988);*/
-
+    // todo Check what resolutions are supported by your camera
     camera.setParameters(params);
     try {
       camera.setPreviewTexture(surface);
@@ -185,42 +137,6 @@ public class SimpleVrPanoramaActivity extends GvrActivity implements GvrView.Ste
     return texture[0];
   }
 
-
-  private int loadGLShader(int type, String code) {
-    int shader = GLES20.glCreateShader(type);
-    GLES20.glShaderSource(shader, code);
-    GLES20.glCompileShader(shader);
-
-    // Get the compilation status.
-    final int[] compileStatus = new int[1];
-    GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compileStatus, 0);
-
-    // If the compilation failed, delete the shader.
-    if (compileStatus[0] == 0) {
-      Log.e(TAG, "Error compiling shader: " + GLES20.glGetShaderInfoLog(shader));
-      GLES20.glDeleteShader(shader);
-      shader = 0;
-    }
-
-    if (shader == 0) {
-      throw new RuntimeException("Error creating shader.");
-    }
-
-    return shader;
-  }
-
-  /**
-   * Checks if we've had an error inside of OpenGL ES, and if so what that error is.
-   *
-   * @param func
-   */
-  private static void checkGLError(String func) {
-    int error;
-    while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
-      Log.e(TAG, func + ": glError " + error);
-      throw new RuntimeException(func + ": glError " + error);
-    }
-  }
 
   /**
    * Sets the view to our CardboardView and initializes the transformation matrices we will use
@@ -283,8 +199,8 @@ public class SimpleVrPanoramaActivity extends GvrActivity implements GvrView.Ste
         textureVerticesBuffer.put(textureVertices);
         textureVerticesBuffer.position(0);
 
-        int vertexShader = loadGLShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);
-        int fragmentShader = loadGLShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
+        int vertexShader = MyShaders.loadVertexShader();
+        int fragmentShader = MyShaders.loadFragmentShader();
 
         mProgram = GLES20.glCreateProgram();             // create empty OpenGL ES Program
         GLES20.glAttachShader(mProgram, vertexShader);   // add the vertex shader to program
@@ -347,8 +263,6 @@ public class SimpleVrPanoramaActivity extends GvrActivity implements GvrView.Ste
 
     @Override
   public void onFrameAvailable(SurfaceTexture arg0) {
-
-    // todo this.cardboardView requestRender();
   }
 
 

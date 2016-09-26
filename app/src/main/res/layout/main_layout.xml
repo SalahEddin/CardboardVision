@@ -1,9 +1,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:stream="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ui_layout"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
-
 
     <com.google.vr.sdk.base.GvrView
         android:id="@+id/cardboard_view"

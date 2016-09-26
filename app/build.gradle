@@ -27,4 +27,6 @@ dependencies {
     compile project(':videowidget')
     compile project(':audio')
     compile project(':base')
+
+    compile 'com.github.niqdev:mjpeg-view:0.3.6'
 }
